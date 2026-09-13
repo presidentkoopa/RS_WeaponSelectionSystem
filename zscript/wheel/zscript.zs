@@ -230,6 +230,9 @@ class wr_Rig : EventHandler
 	const PANEL_H       = 11.0;
 	const SPREAD_DEG    = 26.0;   // angle between adjacent panels
 	const MAX_PANELS    = 9;
+	// The pointer's volumetric cone lives on its OWN slot. Unslotted it took 0 and fought
+	// RS_Lance there; the torch holds 1, the Lance keeps 0 (its fog look), the wheel 2.
+	const VOLBEAM_SLOT  = 2;
 	const TOUCH_RANGE   = 9.0;    // fingertip radius
 	const HOVER_REPEAT  = 6;      // tics before a held hand re-triggers
 
@@ -8095,14 +8098,14 @@ class wr_Rig : EventHandler
 				reach,
 				cv("wr_vbeam_density", 0.55) * (onCard ? 1.35 : 1.0),
 				2.2,
-				cv("wr_vbeam_dust", 0.5), 0.035, 0.4);
+				cv("wr_vbeam_dust", 0.5), 0.035, 0.4, VOLBEAM_SLOT);
 			mBeamHeld = true;
 		}
 		else if (mBeamHeld)
 		{
 			// Switched off with the rig still open. Every cvar here is live, so
 			// each of these needs its own way back out.
-			level.ClearVolumetricBeam();
+			level.ClearVolumetricBeam(VOLBEAM_SLOT);
 			mBeamHeld = false;
 		}
 
@@ -8214,7 +8217,7 @@ class wr_Rig : EventHandler
 	// flags are the only record of what is ours.
 	private void releaseDecor()
 	{
-		if (mBeamHeld)  { level.ClearVolumetricBeam(); mBeamHeld = false; }
+		if (mBeamHeld)  { level.ClearVolumetricBeam(VOLBEAM_SLOT); mBeamHeld = false; }
 		if (mSweepHeld) { level.ClearSweep();          mSweepHeld = false; }
 		if (mFogHeld)   { level.ClearFogSlabOverride();        mFogHeld = false; }
 
